@@ -530,13 +530,8 @@ def main_page():
                 completion_icon = "✅" if is_completed else "⭕"
                 completed_class = "completed" if is_completed else ""
                 
-                # Kontener dla ćwiczenia z nowym layoutem
-                st.markdown(f"""
-                <div class="exercise-container {completed_class}">
-                    <div class="exercise-image-container">
-                """, unsafe_allow_html=True)
-                
-                # Obrazek w HTML
+                # Przygotowanie obrazka
+                image_html = ""
                 image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
                 if os.path.exists(image_file):
                     try:
@@ -545,28 +540,29 @@ def main_page():
                         buffered = BytesIO()
                         image.save(buffered, format="PNG")
                         img_str = base64.b64encode(buffered.getvalue()).decode()
-                        st.markdown(f"""
-                        <img src="data:image/png;base64,{img_str}" 
-                             style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">
-                        """, unsafe_allow_html=True)
+                        image_html = f'<img src="data:image/png;base64,{img_str}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid #f8f9fa;">'
                     except:
                         # Fallback emoji
-                        st.markdown(f"""
-                        <div style="width: 100%; height: 100%; border-radius: 8px; 
+                        image_html = f"""
+                        <div style="width: 60px; height: 60px; border-radius: 8px; 
                                    background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
                                    display: flex; align-items: center; justify-content: center; 
-                                   font-size: 1.8rem; color: white;">💪</div>
-                        """, unsafe_allow_html=True)
+                                   font-size: 1.8rem; color: white; flex-shrink: 0;">💪</div>
+                        """
                 else:
                     # Fallback emoji jeśli nie ma pliku
-                    st.markdown(f"""
-                    <div style="width: 100%; height: 100%; border-radius: 8px; 
+                    image_html = f"""
+                    <div style="width: 60px; height: 60px; border-radius: 8px; 
                                background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
                                display: flex; align-items: center; justify-content: center; 
-                               font-size: 1.8rem; color: white;">💪</div>
-                    """, unsafe_allow_html=True)
+                               font-size: 1.8rem; color: white; flex-shrink: 0;">💪</div>
+                    """
                 
+                # Kompletny HTML dla ćwiczenia
                 st.markdown(f"""
+                <div class="exercise-container {completed_class}">
+                    <div class="exercise-image-container">
+                        {image_html}
                     </div>
                     <div class="exercise-content">
                         <div class="exercise-name">{exercise}</div>
