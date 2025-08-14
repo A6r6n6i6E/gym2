@@ -174,8 +174,8 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     .exercise-image {
-        width: 50px;
-        height: 50px;
+        width: 150px;
+        height: 150px;
         border-radius: 8px;
         object-fit: cover;
         flex-shrink: 0;
@@ -405,12 +405,12 @@ def exercise_page(exercise_name):
         if os.path.exists(image_file):
             try:
                 image = Image.open(image_file)
-                image = image.resize((80, 80), Image.Resampling.LANCZOS)
-                st.image(image, width=80)
+                image = image.resize((180, 180), Image.Resampling.LANCZOS)
+                st.image(image, width=180)
             except:
                 # Fallback emoji
                 st.markdown(f"""
-                <div style="width: 80px; height: 80px; border-radius: 15px; 
+                <div style="width: 180px; height: 180px; border-radius: 15px; 
                            background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
                            display: flex; align-items: center; justify-content: center; 
                            font-size: 2rem; color: white; margin: auto;">💪</div>
@@ -418,7 +418,7 @@ def exercise_page(exercise_name):
         else:
             # Fallback emoji jeśli nie ma pliku
             st.markdown(f"""
-            <div style="width: 80px; height: 80px; border-radius: 15px; 
+            <div style="width: 180px; height: 180px; border-radius: 15px; 
                        background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
                        display: flex; align-items: center; justify-content: center; 
                        font-size: 2rem; color: white; margin: auto;">💪</div>
@@ -529,8 +529,8 @@ def main_page():
                         if os.path.exists(image_file):
                             try:
                                 image = Image.open(image_file)
-                                image = image.resize((50, 50), Image.Resampling.LANCZOS)
-                                st.image(image, width=50)
+                                image = image.resize((150, 150), Image.Resampling.LANCZOS)
+                                st.image(image, width=150)
                             except:
                                 # Fallback emoji
                                 st.markdown(f"""
@@ -542,7 +542,7 @@ def main_page():
                         else:
                             # Fallback emoji jeśli nie ma pliku
                             st.markdown(f"""
-                            <div style="width: 50px; height: 50px; border-radius: 8px; 
+                            <div style="width: 150px; height: 150px; border-radius: 8px; 
                                        background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
                                        display: flex; align-items: center; justify-content: center; 
                                        font-size: 1.5rem; color: white;">💪</div>
