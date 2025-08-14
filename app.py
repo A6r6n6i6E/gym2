@@ -174,8 +174,8 @@ st.markdown("""
         box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     .exercise-image {
-        width: 150px;
-        height: 150px;
+        width: 50px;
+        height: 50px;
         border-radius: 8px;
         object-fit: cover;
         flex-shrink: 0;
@@ -244,7 +244,7 @@ def get_exercise_image_base64(exercise_name):
         try:
             image = Image.open(image_file)
             # Resize obrazka do jednolitego rozmiaru
-            image = image.resize((50, 50), Image.Resampling.LANCZOS)
+            image = image.resize((150, 150), Image.Resampling.LANCZOS)
             buffered = BytesIO()
             image.save(buffered, format="PNG")
             return base64.b64encode(buffered.getvalue()).decode()
@@ -411,7 +411,7 @@ def exercise_page(exercise_name):
                 # Fallback emoji
                 st.markdown(f"""
                 <div style="width: 180px; height: 180px; border-radius: 15px; 
-                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
                            display: flex; align-items: center; justify-content: center; 
                            font-size: 2rem; color: white; margin: auto;">💪</div>
                 """, unsafe_allow_html=True)
@@ -419,7 +419,7 @@ def exercise_page(exercise_name):
             # Fallback emoji jeśli nie ma pliku
             st.markdown(f"""
             <div style="width: 180px; height: 180px; border-radius: 15px; 
-                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
                        display: flex; align-items: center; justify-content: center; 
                        font-size: 2rem; color: white; margin: auto;">💪</div>
             """, unsafe_allow_html=True)
@@ -503,78 +503,79 @@ def main_page():
                 is_completed = is_exercise_completed_this_week(exercise)
                 completion_icon = "✅" if is_completed else "⭕"
                 
-                # Kontener dla ćwiczenia
-                container = st.container()
-                with container:
-                    # Tło dla ukończonych ćwiczeń
-                    if is_completed:
-                        st.markdown(f"""
-                        <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
-                                   border: 2px solid #28a745; border-radius: 10px; 
-                                   padding: 0.5rem; margin: 0.3rem 0;">
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.markdown(f"""
-                        <div style="background: white; border: 2px solid {day_data['color']}50; 
-                                   border-radius: 10px; padding: 0.5rem; margin: 0.3rem 0; 
-                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
-                        """, unsafe_allow_html=True)
-                    
-                    # Layout z trzema kolumnami: obrazek, info, status
-                    col1, col2, col3 = st.columns([1, 4, 1])
-                    
-                    with col1:
-                        # Próba załadowania obrazka
-                        image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
-                        if os.path.exists(image_file):
-                            try:
-                                image = Image.open(image_file)
-                                image = image.resize((150, 150), Image.Resampling.LANCZOS)
-                                st.image(image, width=150)
-                            except:
-                                # Fallback emoji
-                                st.markdown(f"""
-                                <div style="width: 50px; height: 50px; border-radius: 8px; 
-                                           background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
-                                           display: flex; align-items: center; justify-content: center; 
-                                           font-size: 1.5rem; color: white;">💪</div>
-                                """, unsafe_allow_html=True)
-                        else:
-                            # Fallback emoji jeśli nie ma pliku
+                # Kontener dla ćwiczenia z responsywnym layoutem
+                if is_completed:
+                    st.markdown(f"""
+                    <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+                               border: 2px solid #28a745; border-radius: 10px; 
+                               padding: 1rem; margin: 0.5rem 0; 
+                               display: flex; align-items: center; gap: 1rem;">
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                    <div style="background: white; border: 2px solid {day_data['color']}50; 
+                               border-radius: 10px; padding: 1rem; margin: 0.5rem 0; 
+                               box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+                               display: flex; align-items: center; gap: 1rem;">
+                    """, unsafe_allow_html=True)
+                
+                # Layout: obrazek po lewej, reszta po prawej
+                col1, col2 = st.columns([1, 4])
+                
+                with col1:
+                    # Obrazek
+                    image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
+                    if os.path.exists(image_file):
+                        try:
+                            image = Image.open(image_file)
+                            image = image.resize((160, 160), Image.Resampling.LANCZOS)
+                            st.image(image, width=160)
+                        except:
+                            # Fallback emoji
                             st.markdown(f"""
-                            <div style="width: 150px; height: 150px; border-radius: 8px; 
-                                       background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                            <div style="width: 160px; height: 160px; border-radius: 8px; 
+                                       background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
                                        display: flex; align-items: center; justify-content: center; 
-                                       font-size: 1.5rem; color: white;">💪</div>
+                                       font-size: 1.8rem; color: white;">💪</div>
                             """, unsafe_allow_html=True)
-                    
-                    with col2:
+                    else:
+                        # Fallback emoji jeśli nie ma pliku
                         st.markdown(f"""
-                        <div style="padding-left: 0.5rem;">
-                            <div style="font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 0.2rem;">
-                                {exercise}
-                            </div>
-                            <div style="font-size: 0.85rem; color: #666;">
-                                {EXERCISES[exercise]['description']}
-                            </div>
-                        </div>
+                        <div style="width: 160px; height: 160px; border-radius: 8px; 
+                                   background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
+                                   display: flex; align-items: center; justify-content: center; 
+                                   font-size: 1.8rem; color: white;">💪</div>
                         """, unsafe_allow_html=True)
+                
+                with col2:
+                    # Nazwa ćwiczenia
+                    st.markdown(f"""
+                    <div style="font-size: 1.1rem; font-weight: 600; color: #333; 
+                               margin-bottom: 0.3rem; line-height: 1.2;">
+                        {exercise}
+                    </div>
+                    """, unsafe_allow_html=True)
                     
-                    with col3:
-                        st.markdown(f"""
-                        <div style="text-align: center; font-size: 1.5rem; padding-top: 0.5rem;">
+                    # Opis i status w jednej linii
+                    st.markdown(f"""
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span style="font-size: 0.9rem; color: #666;">
+                            {EXERCISES[exercise]['description']}
+                        </span>
+                        <span style="font-size: 1.8rem; margin-left: 1rem;">
                             {completion_icon}
-                        </div>
-                        """, unsafe_allow_html=True)
-                    
-                    st.markdown("</div>", unsafe_allow_html=True)
-                    
-                    # Przycisk dla funkcjonalności
-                    exercise_short = exercise.split(' - ')[0][:25] + "..." if len(exercise) > 25 else exercise
-                    if st.button(f"➤ {exercise_short}", key=f"{day}_{exercise}", use_container_width=True):
-                        st.session_state.selected_exercise = exercise
-                        st.query_params["exercise"] = exercise
-                        st.rerun()
+                        </span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("</div>", unsafe_allow_html=True)
+                
+                # Przycisk dla funkcjonalności
+                exercise_short = exercise.split(' - ')[0][:30] + "..." if len(exercise) > 30 else exercise
+                if st.button(f"➤ {exercise_short}", key=f"{day}_{exercise}", use_container_width=True):
+                    st.session_state.selected_exercise = exercise
+                    st.query_params["exercise"] = exercise
+                    st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
 
