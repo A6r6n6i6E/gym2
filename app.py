@@ -156,52 +156,57 @@ st.markdown("""
         margin-bottom: 0.5rem;
         text-align: center;
     }
-    .exercise-button-with-image {
+    .exercise-container {
         background: white;
         border: 2px solid #dee2e6;
         border-radius: 10px;
-        padding: 0.8rem;
-        margin: 0.3rem 0;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        cursor: pointer;
-        transition: all 0.3s ease;
+        padding: 1rem;
+        margin: 0.5rem 0;
         box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+        min-height: 70px;
     }
-    .exercise-button-with-image:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    .exercise-container.completed {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb);
+        border-color: #28a745;
     }
-    .exercise-image {
-        width: 50px;
-        height: 50px;
-        border-radius: 8px;
-        object-fit: cover;
+    .exercise-image-container {
         flex-shrink: 0;
-        border: 2px solid #f8f9fa;
+        width: 60px;
+        height: 60px;
     }
-    .exercise-info {
+    .exercise-content {
         flex-grow: 1;
-        text-align: left;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        min-width: 0;
     }
     .exercise-name {
-        font-size: 1rem;
+        font-size: 1.1rem;
         font-weight: 600;
         color: #333;
-        margin-bottom: 0.2rem;
+        line-height: 1.2;
+        margin: 0;
+        word-wrap: break-word;
+    }
+    .exercise-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 0.5rem;
     }
     .exercise-description {
-        font-size: 0.85rem;
+        font-size: 0.9rem;
         color: #666;
+        flex-grow: 1;
+        min-width: 0;
     }
-    .completion-status {
+    .exercise-status {
         font-size: 1.5rem;
         flex-shrink: 0;
-    }
-    .exercise-completed {
-        background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
-        border-color: #28a745 !important;
     }
     .week-indicator {
         background: linear-gradient(135deg, #007bff, #0056b3);
@@ -228,6 +233,27 @@ st.markdown("""
         min-width: 120px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
+    
+    /* Media queries for better responsive design */
+    @media (max-width: 768px) {
+        .exercise-container {
+            padding: 0.8rem;
+            gap: 0.8rem;
+        }
+        .exercise-image-container {
+            width: 50px;
+            height: 50px;
+        }
+        .exercise-name {
+            font-size: 1rem;
+        }
+        .exercise-description {
+            font-size: 0.85rem;
+        }
+        .exercise-status {
+            font-size: 1.3rem;
+        }
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -244,7 +270,7 @@ def get_exercise_image_base64(exercise_name):
         try:
             image = Image.open(image_file)
             # Resize obrazka do jednolitego rozmiaru
-            image = image.resize((150, 150), Image.Resampling.LANCZOS)
+            image = image.resize((50, 50), Image.Resampling.LANCZOS)
             buffered = BytesIO()
             image.save(buffered, format="PNG")
             return base64.b64encode(buffered.getvalue()).decode()
@@ -405,21 +431,21 @@ def exercise_page(exercise_name):
         if os.path.exists(image_file):
             try:
                 image = Image.open(image_file)
-                image = image.resize((180, 180), Image.Resampling.LANCZOS)
-                st.image(image, width=180)
+                image = image.resize((80, 80), Image.Resampling.LANCZOS)
+                st.image(image, width=80)
             except:
                 # Fallback emoji
                 st.markdown(f"""
-                <div style="width: 180px; height: 180px; border-radius: 15px; 
-                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
+                <div style="width: 80px; height: 80px; border-radius: 15px; 
+                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
                            display: flex; align-items: center; justify-content: center; 
                            font-size: 2rem; color: white; margin: auto;">💪</div>
                 """, unsafe_allow_html=True)
         else:
             # Fallback emoji jeśli nie ma pliku
             st.markdown(f"""
-            <div style="width: 180px; height: 180px; border-radius: 15px; 
-                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
+            <div style="width: 80px; height: 80px; border-radius: 15px; 
+                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
                        display: flex; align-items: center; justify-content: center; 
                        font-size: 2rem; color: white; margin: auto;">💪</div>
             """, unsafe_allow_html=True)
@@ -502,73 +528,55 @@ def main_page():
             for exercise in day_data["exercises"]:
                 is_completed = is_exercise_completed_this_week(exercise)
                 completion_icon = "✅" if is_completed else "⭕"
+                completed_class = "completed" if is_completed else ""
                 
-                # Kontener dla ćwiczenia z responsywnym layoutem
-                if is_completed:
-                    st.markdown(f"""
-                    <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
-                               border: 2px solid #28a745; border-radius: 10px; 
-                               padding: 1rem; margin: 0.5rem 0; 
-                               display: flex; align-items: center; gap: 1rem;">
-                    """, unsafe_allow_html=True)
-                else:
-                    st.markdown(f"""
-                    <div style="background: white; border: 2px solid {day_data['color']}50; 
-                               border-radius: 10px; padding: 1rem; margin: 0.5rem 0; 
-                               box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-                               display: flex; align-items: center; gap: 1rem;">
-                    """, unsafe_allow_html=True)
+                # Kontener dla ćwiczenia z nowym layoutem
+                st.markdown(f"""
+                <div class="exercise-container {completed_class}">
+                    <div class="exercise-image-container">
+                """, unsafe_allow_html=True)
                 
-                # Layout: obrazek po lewej, reszta po prawej
-                col1, col2 = st.columns([1, 4])
-                
-                with col1:
-                    # Obrazek
-                    image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
-                    if os.path.exists(image_file):
-                        try:
-                            image = Image.open(image_file)
-                            image = image.resize((160, 160), Image.Resampling.LANCZOS)
-                            st.image(image, width=160)
-                        except:
-                            # Fallback emoji
-                            st.markdown(f"""
-                            <div style="width: 160px; height: 160px; border-radius: 8px; 
-                                       background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
-                                       display: flex; align-items: center; justify-content: center; 
-                                       font-size: 1.8rem; color: white;">💪</div>
-                            """, unsafe_allow_html=True)
-                    else:
-                        # Fallback emoji jeśli nie ma pliku
+                # Obrazek w HTML
+                image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
+                if os.path.exists(image_file):
+                    try:
+                        image = Image.open(image_file)
+                        image = image.resize((60, 60), Image.Resampling.LANCZOS)
+                        buffered = BytesIO()
+                        image.save(buffered, format="PNG")
+                        img_str = base64.b64encode(buffered.getvalue()).decode()
                         st.markdown(f"""
-                        <div style="width: 160px; height: 160px; border-radius: 8px; 
-                                   background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
+                        <img src="data:image/png;base64,{img_str}" 
+                             style="width: 100%; height: 100%; border-radius: 8px; object-fit: cover;">
+                        """, unsafe_allow_html=True)
+                    except:
+                        # Fallback emoji
+                        st.markdown(f"""
+                        <div style="width: 100%; height: 100%; border-radius: 8px; 
+                                   background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
                                    display: flex; align-items: center; justify-content: center; 
                                    font-size: 1.8rem; color: white;">💪</div>
                         """, unsafe_allow_html=True)
-                
-                with col2:
-                    # Nazwa ćwiczenia
+                else:
+                    # Fallback emoji jeśli nie ma pliku
                     st.markdown(f"""
-                    <div style="font-size: 1.1rem; font-weight: 600; color: #333; 
-                               margin-bottom: 0.3rem; line-height: 1.2;">
-                        {exercise}
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    # Opis i status w jednej linii
-                    st.markdown(f"""
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 0.9rem; color: #666;">
-                            {EXERCISES[exercise]['description']}
-                        </span>
-                        <span style="font-size: 1.8rem; margin-left: 1rem;">
-                            {completion_icon}
-                        </span>
-                    </div>
+                    <div style="width: 100%; height: 100%; border-radius: 8px; 
+                               background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                               display: flex; align-items: center; justify-content: center; 
+                               font-size: 1.8rem; color: white;">💪</div>
                     """, unsafe_allow_html=True)
                 
-                st.markdown("</div>", unsafe_allow_html=True)
+                st.markdown(f"""
+                    </div>
+                    <div class="exercise-content">
+                        <div class="exercise-name">{exercise}</div>
+                        <div class="exercise-footer">
+                            <div class="exercise-description">{EXERCISES[exercise]['description']}</div>
+                            <div class="exercise-status">{completion_icon}</div>
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
                 
                 # Przycisk dla funkcjonalności
                 exercise_short = exercise.split(' - ')[0][:30] + "..." if len(exercise) > 30 else exercise
