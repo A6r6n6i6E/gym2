@@ -16,77 +16,33 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS dla mobile-first design
-st.markdown("""
-<style>
-    .main > div {
-        padding: 1rem;
-    }
-    .stButton > button {
-        width: 100%;
-        height: 3rem;
-        font-size: 16px;
-        border-radius: 10px;
-        margin-bottom: 0.5rem;
-    }
-    .day-container {
-        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-        border-radius: 15px;
-        padding: 1rem;
-        margin-bottom: 1rem;
-        border: 2px solid #dee2e6;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-    .day-header {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 0.5rem;
-        text-align: center;
-    }
-    .exercise-button {
-        background: white;
-        border: 2px solid #dee2e6;
-        border-radius: 10px;
-        padding: 1rem;
-        margin: 0.5rem 0;
-        text-align: center;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
-    .exercise-completed {
-        background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
-        border-color: #28a745 !important;
-    }
-    .week-indicator {
-        background: linear-gradient(135deg, #007bff, #0056b3);
-        color: white;
-        padding: 1rem;
-        border-radius: 15px;
-        text-align: center;
-        margin-bottom: 1rem;
-        font-size: 1.2rem;
-        font-weight: bold;
-    }
-    .metric-container {
-        display: flex;
-        justify-content: space-around;
-        flex-wrap: wrap;
-        gap: 1rem;
-        margin: 1rem 0;
-    }
-    .metric-card {
-        background: white;
-        border-radius: 10px;
-        padding: 1rem;
-        text-align: center;
-        min-width: 120px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-</style>
-""", unsafe_allow_html=True)
-
 # Ścieżka do pliku z danymi
 DATA_FILE = "gym_progress.json"
+
+# Mapowanie nazw ćwiczeń do plików PNG
+EXERCISE_IMAGES = {
+    "Wyciskanie na ławeczce poziomej": "lawka.png",
+    "Brzuszki na maszynie": "brzuszki.png",
+    "Wypychanie nóg (Leg Press)": "legpress.png",
+    "Biceps - uginanie ramion": "biceps.png",
+    "Barki - podciąganie sztangi": "barki.png",
+    "Triceps - wyciskanie francuskie": "triceps.png",
+    "Przenoszenie hantla za głowę w leżeniu": "wioslowanie.png",
+    "Wyciskanie na suwnicy Smitha": "podciaganie.png",
+    # Nowe ćwiczenia
+    "Przysiady na suwnicy Smitha": "brak.png",
+    "Uginanie nóg leżąc": "brak.png",
+    "Unoszenie nóg w zwisie": "brak.png",
+    "Plank": "brak.png",
+    "Wyciskanie sztangi nad głowę": "brak.png",
+    "Wznosy bokiem": "brak.png",
+    "Podciąganie na drążku": "brak.png",
+    "Wiosłowanie sztangą": "brak.png",
+    "Ściąganie wyciągu górnego": "brak.png",
+    "Bieżnia - 30 min": "brak.png",
+    "Rower stacjonarny - 20 min": "brak.png",
+    "Stepper - 15 min": "brak.png"
+}
 
 # Plan treningowy na tydzień
 WEEKLY_PLAN = {
@@ -172,6 +128,129 @@ EXERCISES = {
     "Rower stacjonarny - 20 min": {"color": "#FFB347", "description": "Cardio"},
     "Stepper - 15 min": {"color": "#FFB347", "description": "Cardio"}
 }
+
+# Custom CSS dla mobile-first design
+st.markdown("""
+<style>
+    .main > div {
+        padding: 1rem;
+    }
+    .stButton > button {
+        width: 100%;
+        height: 3rem;
+        font-size: 16px;
+        border-radius: 10px;
+        margin-bottom: 0.5rem;
+    }
+    .day-container {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+        border-radius: 15px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        border: 2px solid #dee2e6;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .day-header {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+        text-align: center;
+    }
+    .exercise-button-with-image {
+        background: white;
+        border: 2px solid #dee2e6;
+        border-radius: 10px;
+        padding: 0.8rem;
+        margin: 0.3rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .exercise-button-with-image:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .exercise-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 2px solid #f8f9fa;
+    }
+    .exercise-info {
+        flex-grow: 1;
+        text-align: left;
+    }
+    .exercise-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.2rem;
+    }
+    .exercise-description {
+        font-size: 0.85rem;
+        color: #666;
+    }
+    .completion-status {
+        font-size: 1.5rem;
+        flex-shrink: 0;
+    }
+    .exercise-completed {
+        background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
+        border-color: #28a745 !important;
+    }
+    .week-indicator {
+        background: linear-gradient(135deg, #007bff, #0056b3);
+        color: white;
+        padding: 1rem;
+        border-radius: 15px;
+        text-align: center;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+    .metric-container {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin: 1rem 0;
+    }
+    .metric-card {
+        background: white;
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        min-width: 120px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
+""", unsafe_allow_html=True)
+
+# Funkcje pomocnicze
+def image_to_base64(image):
+    buffered = BytesIO()
+    image.save(buffered, format="PNG")
+    return base64.b64encode(buffered.getvalue()).decode()
+
+def get_exercise_image_base64(exercise_name):
+    """Zwraca obraz ćwiczenia w formacie base64 lub None"""
+    image_file = EXERCISE_IMAGES.get(exercise_name, "brak.png")
+    if os.path.exists(image_file):
+        try:
+            image = Image.open(image_file)
+            # Resize obrazka do jednolitego rozmiaru
+            image = image.resize((50, 50), Image.Resampling.LANCZOS)
+            buffered = BytesIO()
+            image.save(buffered, format="PNG")
+            return base64.b64encode(buffered.getvalue()).decode()
+        except:
+            return None
+    return None
 
 def get_current_week_monday():
     """Zwraca poniedziałek obecnego tygodnia"""
@@ -318,12 +397,40 @@ def exercise_page(exercise_name):
         st.query_params.clear()
         st.rerun()
 
-    st.markdown(f"""
-    <div style="text-align: center; margin: 1rem 0;">
-        <h2 style="color: {EXERCISES[exercise_name]['color']}; margin-bottom: 0.5rem;">{exercise_name}</h2>
-        <p style="font-size: 16px; color: #666; margin-bottom: 1rem;">{EXERCISES[exercise_name]['description']}</p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Nagłówek z obrazkiem
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        # Próba załadowania obrazka
+        image_file = EXERCISE_IMAGES.get(exercise_name, "brak.png")
+        if os.path.exists(image_file):
+            try:
+                image = Image.open(image_file)
+                image = image.resize((80, 80), Image.Resampling.LANCZOS)
+                st.image(image, width=80)
+            except:
+                # Fallback emoji
+                st.markdown(f"""
+                <div style="width: 80px; height: 80px; border-radius: 15px; 
+                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+                           display: flex; align-items: center; justify-content: center; 
+                           font-size: 2rem; color: white; margin: auto;">💪</div>
+                """, unsafe_allow_html=True)
+        else:
+            # Fallback emoji jeśli nie ma pliku
+            st.markdown(f"""
+            <div style="width: 80px; height: 80px; border-radius: 15px; 
+                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+                       display: flex; align-items: center; justify-content: center; 
+                       font-size: 2rem; color: white; margin: auto;">💪</div>
+            """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+        <div style="padding-left: 1rem;">
+            <h2 style="color: {EXERCISES[exercise_name]['color']}; margin-bottom: 0.5rem; font-size: 1.4rem;">{exercise_name}</h2>
+            <p style="font-size: 16px; color: #666; margin-bottom: 1rem;">{EXERCISES[exercise_name]['description']}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
     # Formularz dodawania rekordu
     with st.form(f"workout_form_{exercise_name}", clear_on_submit=True):
@@ -395,13 +502,76 @@ def main_page():
             for exercise in day_data["exercises"]:
                 is_completed = is_exercise_completed_this_week(exercise)
                 completion_icon = "✅" if is_completed else "⭕"
-                button_class = "exercise-completed" if is_completed else ""
                 
-                col1, col2 = st.columns([1, 6])
-                with col1:
-                    st.markdown(f"<div style='text-align: center; font-size: 1.5rem; padding-top: 0.5rem;'>{completion_icon}</div>", unsafe_allow_html=True)
-                with col2:
-                    if st.button(f"{exercise}", key=f"{day}_{exercise}", use_container_width=True):
+                # Kontener dla ćwiczenia
+                container = st.container()
+                with container:
+                    # Tło dla ukończonych ćwiczeń
+                    if is_completed:
+                        st.markdown(f"""
+                        <div style="background: linear-gradient(135deg, #d4edda, #c3e6cb); 
+                                   border: 2px solid #28a745; border-radius: 10px; 
+                                   padding: 0.5rem; margin: 0.3rem 0;">
+                        """, unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"""
+                        <div style="background: white; border: 2px solid {day_data['color']}50; 
+                                   border-radius: 10px; padding: 0.5rem; margin: 0.3rem 0; 
+                                   box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        """, unsafe_allow_html=True)
+                    
+                    # Layout z trzema kolumnami: obrazek, info, status
+                    col1, col2, col3 = st.columns([1, 4, 1])
+                    
+                    with col1:
+                        # Próba załadowania obrazka
+                        image_file = EXERCISE_IMAGES.get(exercise, "brak.png")
+                        if os.path.exists(image_file):
+                            try:
+                                image = Image.open(image_file)
+                                image = image.resize((50, 50), Image.Resampling.LANCZOS)
+                                st.image(image, width=50)
+                            except:
+                                # Fallback emoji
+                                st.markdown(f"""
+                                <div style="width: 50px; height: 50px; border-radius: 8px; 
+                                           background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                                           display: flex; align-items: center; justify-content: center; 
+                                           font-size: 1.5rem; color: white;">💪</div>
+                                """, unsafe_allow_html=True)
+                        else:
+                            # Fallback emoji jeśli nie ma pliku
+                            st.markdown(f"""
+                            <div style="width: 50px; height: 50px; border-radius: 8px; 
+                                       background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                                       display: flex; align-items: center; justify-content: center; 
+                                       font-size: 1.5rem; color: white;">💪</div>
+                            """, unsafe_allow_html=True)
+                    
+                    with col2:
+                        st.markdown(f"""
+                        <div style="padding-left: 0.5rem;">
+                            <div style="font-size: 1rem; font-weight: 600; color: #333; margin-bottom: 0.2rem;">
+                                {exercise}
+                            </div>
+                            <div style="font-size: 0.85rem; color: #666;">
+                                {EXERCISES[exercise]['description']}
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    with col3:
+                        st.markdown(f"""
+                        <div style="text-align: center; font-size: 1.5rem; padding-top: 0.5rem;">
+                            {completion_icon}
+                        </div>
+                        """, unsafe_allow_html=True)
+                    
+                    st.markdown("</div>", unsafe_allow_html=True)
+                    
+                    # Przycisk dla funkcjonalności
+                    exercise_short = exercise.split(' - ')[0][:25] + "..." if len(exercise) > 25 else exercise
+                    if st.button(f"➤ {exercise_short}", key=f"{day}_{exercise}", use_container_width=True):
                         st.session_state.selected_exercise = exercise
                         st.query_params["exercise"] = exercise
                         st.rerun()
