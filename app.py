@@ -31,7 +31,10 @@ EXERCISE_IMAGES = {
     "Wyciskanie na suwnicy Smitha": "podciaganie.png",
     # Nowe ćwiczenia
     "Przysiady na suwnicy Smitha": "brak.png",
-    "Uginanie nóg leżąc": "brak.png",
+    "Uginanie nóg leżąc": "nogi-lezac.png",
+    "Uginanie nóg siedząc": "nogi-siedzac.png",
+    "Odwodzenie nóg siedząc": "nogi-odwodzenie.png", 
+    "Wypychanie ciężaru palcami nóg": "nogi-lydki-suwnica.png",
     "Unoszenie nóg w zwisie": "brak.png",
     "Plank": "brak.png",
     "Wyciskanie sztangi nad głowę": "brak.png",
@@ -47,17 +50,19 @@ EXERCISE_IMAGES = {
 # Plan treningowy na tydzień
 WEEKLY_PLAN = {
     "Poniedziałek": {
-        "title": "🦵 NOGI",
-        "color": "#FF6B6B",
+        "title": "Poniedziałek: NOGI",
+        "color": "#FFB347",
         "exercises": [
             "Wypychanie nóg (Leg Press)",
-            "Przysiady na suwnicy Smitha",
-            "Uginanie nóg leżąc"
+            "Uginanie nóg leżąc",
+            "Uginanie nóg siedząc",
+            "Odwodzenie nóg siedząc",
+            "Wypychanie ciężaru palcami nóg"
         ]
     },
     "Wtorek": {
-        "title": "💪 KLATKA PIERSIOWA",
-        "color": "#4ECDC4",
+        "title": "Wtorek: KLATA",
+        "color": "#FFB347",
         "exercises": [
             "Wyciskanie na ławeczce poziomej",
             "Wyciskanie na suwnicy Smitha",
@@ -65,8 +70,8 @@ WEEKLY_PLAN = {
         ]
     },
     "Środa": {
-        "title": "🎯 BRZUCH",
-        "color": "#45B7D1",
+        "title": "Środa: BRZUCH",
+        "color": "#FFB347",
         "exercises": [
             "Brzuszki na maszynie",
             "Unoszenie nóg w zwisie",
@@ -74,8 +79,8 @@ WEEKLY_PLAN = {
         ]
     },
     "Czwartek": {
-        "title": "🏋️ BARKI",
-        "color": "#96CEB4",
+        "title": "Czwartek: BARKI",
+        "color": "#FFB347",
         "exercises": [
             "Barki - podciąganie sztangi",
             "Wyciskanie sztangi nad głowę",
@@ -83,8 +88,8 @@ WEEKLY_PLAN = {
         ]
     },
     "Piątek": {
-        "title": "🔙 PLECY",
-        "color": "#FFEAA7",
+        "title": "Piątek: PLECY",
+        "color": "#FFB347",
         "exercises": [
             "Podciąganie na drążku",
             "Wiosłowanie sztangą",
@@ -92,12 +97,12 @@ WEEKLY_PLAN = {
         ]
     },
     "Sobota": {
-        "title": "😴 REGENERACJA",
-        "color": "#DDA0DD",
+        "title": "Sobota: REGENERACJA",
+        "color": "#FFB347",
         "exercises": []
     },
     "Niedziela": {
-        "title": "🏃 CARDIO",
+        "title": "Niedziela: CARDIO",
         "color": "#FFB347",
         "exercises": [
             "Bieżnia - 30 min",
@@ -109,9 +114,11 @@ WEEKLY_PLAN = {
 
 # Rozszerzone ćwiczenia z opisami
 EXERCISES = {
-    "Wypychanie nóg (Leg Press)": {"color": "#FF6B6B", "description": "Czworogłowy uda"},
-    "Przysiady na suwnicy Smitha": {"color": "#FF6B6B", "description": "Nogi, pośladki"},
-    "Uginanie nóg leżąc": {"color": "#FF6B6B", "description": "Dwugłowy uda"},
+    "Wypychanie nóg (Leg Press)": {"color": "#FF6B6B", "description": "Mięsień czworogłowy uda"},
+    "Uginanie nóg siedząc": {"color": "#FF6B6B", "description": "Mięśnie tylnej części uda"},
+    "Uginanie nóg leżąc": {"color": "#FF6B6B", "description": "Mięśnie tylnej części uda"},
+    "Odwodzenie nóg siedząc": {"color": "#FF6B6B", "description": "Mięsień pośladkowy średni i mały"},
+    "Wypychanie ciężaru palcami nóg": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
     "Wyciskanie na ławeczce poziomej": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
     "Wyciskanie na suwnicy Smitha": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
     "Przenoszenie hantla za głowę w leżeniu": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
