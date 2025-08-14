@@ -174,8 +174,8 @@ st.markdown("""
     }
     .exercise-image-container {
         flex-shrink: 0;
-        width: 60px;
-        height: 60px;
+        width: 160px;
+        height: 160px;
     }
     .exercise-content {
         flex-grow: 1;
@@ -241,8 +241,8 @@ st.markdown("""
             gap: 0.8rem;
         }
         .exercise-image-container {
-            width: 50px;
-            height: 50px;
+            width: 150px;
+            height: 150px;
         }
         .exercise-name {
             font-size: 1rem;
@@ -270,7 +270,7 @@ def get_exercise_image_base64(exercise_name):
         try:
             image = Image.open(image_file)
             # Resize obrazka do jednolitego rozmiaru
-            image = image.resize((50, 50), Image.Resampling.LANCZOS)
+            image = image.resize((150, 150), Image.Resampling.LANCZOS)
             buffered = BytesIO()
             image.save(buffered, format="PNG")
             return base64.b64encode(buffered.getvalue()).decode()
@@ -436,16 +436,16 @@ def exercise_page(exercise_name):
             except:
                 # Fallback emoji
                 st.markdown(f"""
-                <div style="width: 80px; height: 80px; border-radius: 15px; 
-                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+                <div style="width: 180px; height: 180px; border-radius: 15px; 
+                           background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
                            display: flex; align-items: center; justify-content: center; 
                            font-size: 2rem; color: white; margin: auto;">💪</div>
                 """, unsafe_allow_html=True)
         else:
             # Fallback emoji jeśli nie ma pliku
             st.markdown(f"""
-            <div style="width: 80px; height: 80px; border-radius: 15px; 
-                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}60);
+            <div style="width: 180px; height: 180px; border-radius: 15px; 
+                       background: linear-gradient(135deg, {EXERCISES[exercise_name]['color']}30, {EXERCISES[exercise_name]['color']}160);
                        display: flex; align-items: center; justify-content: center; 
                        font-size: 2rem; color: white; margin: auto;">💪</div>
             """, unsafe_allow_html=True)
@@ -536,24 +536,24 @@ def main_page():
                 if os.path.exists(image_file):
                     try:
                         image = Image.open(image_file)
-                        image = image.resize((60, 60), Image.Resampling.LANCZOS)
+                        image = image.resize((160, 160), Image.Resampling.LANCZOS)
                         buffered = BytesIO()
                         image.save(buffered, format="PNG")
                         img_str = base64.b64encode(buffered.getvalue()).decode()
-                        image_html = f'<img src="data:image/png;base64,{img_str}" style="width: 60px; height: 60px; border-radius: 8px; object-fit: cover; border: 2px solid #f8f9fa;">'
+                        image_html = f'<img src="data:image/png;base64,{img_str}" style="width: 160px; height: 160px; border-radius: 8px; object-fit: cover; border: 2px solid #f8f9fa;">'
                     except:
                         # Fallback emoji
                         image_html = f"""
-                        <div style="width: 60px; height: 60px; border-radius: 8px; 
-                                   background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                        <div style="width: 160px; height: 160px; border-radius: 8px; 
+                                   background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
                                    display: flex; align-items: center; justify-content: center; 
                                    font-size: 1.8rem; color: white; flex-shrink: 0;">💪</div>
                         """
                 else:
                     # Fallback emoji jeśli nie ma pliku
                     image_html = f"""
-                    <div style="width: 60px; height: 60px; border-radius: 8px; 
-                               background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}60);
+                    <div style="width: 160px; height: 160px; border-radius: 8px; 
+                               background: linear-gradient(135deg, {day_data['color']}30, {day_data['color']}160);
                                display: flex; align-items: center; justify-content: center; 
                                font-size: 1.8rem; color: white; flex-shrink: 0;">💪</div>
                     """
