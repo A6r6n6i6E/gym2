@@ -23,25 +23,37 @@ DATA_FILE = "gym_progress.json"
 EXERCISE_IMAGES = {
     "Wyciskanie na ławeczce poziomej": "lawka.png",
     "Brzuszki na maszynie": "brzuszki.png",
+    "Boczne zgięcia tułowia na ławce rzymskiej": "brzuszki-rzymska.png",
+    "Skłony tułowia na ławce skośnej": "brzuszki-lawka.png",
+    "Wznosy zgiętych nóg w zwisie na drążku": "brzuch-wznosy.png",
     "Wypychanie nóg (Leg Press)": "legpress.png",
     "Biceps - uginanie ramion": "biceps.png",
-    "Barki - podciąganie sztangi": "barki.png",
+    "Podciąganie sztangi wzdłuż tułowia": "barki.png",
+    "Odwrotne rozpiętki na maszynie": "barki-rozpietki.png",
     "Triceps - wyciskanie francuskie": "triceps.png",
     "Przenoszenie hantla za głowę w leżeniu": "wioslowanie.png",
     "Wyciskanie na suwnicy Smitha": "podciaganie.png",
+    "Wyciskanie hantlii": "klata-wyciskaniehantli.png",
+    "Rozpietki na maszynie": "klata-rozpietki.png",
+    "Pompki na poręczach ze wspomaganiem": "klata-pompki-maszyna.png",
     # Nowe ćwiczenia
     "Przysiady na suwnicy Smitha": "brak.png",
     "Uginanie nóg leżąc": "nogi-lezac.png",
     "Uginanie nóg siedząc": "nogi-siedzac.png",
     "Odwodzenie nóg siedząc": "nogi-odwodzenie.png", 
     "Wypychanie ciężaru palcami nóg": "nogi-lydki-suwnica.png",
-    "Unoszenie nóg w zwisie": "brak.png",
+    "Wspięcia na palce siedząc na maszynie": "nogi-lydki.png",
+    "Skręty tułowia na maszynie": "brzuch-skretytulowia.png",
     "Plank": "brak.png",
-    "Wyciskanie sztangi nad głowę": "brak.png",
-    "Wznosy bokiem": "brak.png",
-    "Podciąganie na drążku": "brak.png",
-    "Wiosłowanie sztangą": "brak.png",
-    "Ściąganie wyciągu górnego": "brak.png",
+    "Wyciskanie hantli nad głowę siedząc": "barki-wyciskaniehantli.png",
+    "Wyciskanie nad głowę na maszynie": "barki-wyciskaniemaszyna.png",
+    "Wznosy ramion bokiem z hantlami": "barki-wznosyzhantlami.png",
+    "Wznosy ramion bokiem na maszynie": "barki-wznosymaszyna.png", 
+    "Podciąganie hantli wzdłuż tułowia": "barki-podciaganiehantli.png", 
+    "Podciąganie nachwytem ze wspomaganiem": "plecy-podciaganie.png",
+    "Wiosłowanie na wyciągu dolnym": "plecy-wioslowanie.png",
+    "Unoszenie tułowia na ławce rzymskiej": "plecy-unoszenietulowia.png",
+    "Ściąganie drążka wyciągu górnego": "plecy-sciaganie.png",
     "Bieżnia - 30 min": "brak.png",
     "Rower stacjonarny - 20 min": "brak.png",
     "Stepper - 15 min": "brak.png"
@@ -57,7 +69,8 @@ WEEKLY_PLAN = {
             "Uginanie nóg leżąc",
             "Uginanie nóg siedząc",
             "Odwodzenie nóg siedząc",
-            "Wypychanie ciężaru palcami nóg"
+            "Wypychanie ciężaru palcami nóg",
+            "Wspięcia na palce siedząc na maszynie"
         ]
     },
     "Wtorek": {
@@ -66,7 +79,10 @@ WEEKLY_PLAN = {
         "exercises": [
             "Wyciskanie na ławeczce poziomej",
             "Wyciskanie na suwnicy Smitha",
-            "Przenoszenie hantla za głowę w leżeniu"
+            "Przenoszenie hantla za głowę w leżeniu",
+            "Wyciskanie hantlii",
+            "Rozpietki na maszynie",
+            "Pompki na poręczach ze wspomaganiem"
         ]
     },
     "Środa": {
@@ -74,26 +90,34 @@ WEEKLY_PLAN = {
         "color": "#FFB347",
         "exercises": [
             "Brzuszki na maszynie",
-            "Unoszenie nóg w zwisie",
-            "Plank"
+            "Skręty tułowia na maszynie",
+            "Wznosy zgiętych nóg w zwisie na drążku",
+            "Boczne zgięcia tułowia na ławce rzymskiej",
+            "Skłony tułowia na ławce skośnej"
         ]
     },
     "Czwartek": {
         "title": "Czwartek: BARKI",
         "color": "#FFB347",
         "exercises": [
-            "Barki - podciąganie sztangi",
-            "Wyciskanie sztangi nad głowę",
-            "Wznosy bokiem"
+            "Podciąganie sztangi wzdłuż tułowia",
+            "Wyciskanie hantli nad głowę siedząc",
+            "Wznosy ramion bokiem z hantlami",
+            "Wyciskanie nad głowę na maszynie",
+            "Wznosy ramion bokiem na maszynie",
+            "Odwrotne rozpiętki na maszynie",
+            "Podciąganie hantli wzdłuż tułowia"
+            
         ]
     },
     "Piątek": {
         "title": "Piątek: PLECY",
         "color": "#FFB347",
         "exercises": [
-            "Podciąganie na drążku",
-            "Wiosłowanie sztangą",
-            "Ściąganie wyciągu górnego"
+            "Podciąganie nachwytem ze wspomaganiem",
+            "Wiosłowanie na wyciągu dolnym",
+            "Ściąganie drążka wyciągu górnego",
+            "Unoszenie tułowia na ławce rzymskiej"
         ]
     },
     "Sobota": {
@@ -119,21 +143,33 @@ EXERCISES = {
     "Uginanie nóg leżąc": {"color": "#FF6B6B", "description": "Mięśnie tylnej części uda"},
     "Odwodzenie nóg siedząc": {"color": "#FF6B6B", "description": "Mięsień pośladkowy średni i mały"},
     "Wypychanie ciężaru palcami nóg": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
-    "Wyciskanie na ławeczce poziomej": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
-    "Wyciskanie na suwnicy Smitha": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
-    "Przenoszenie hantla za głowę w leżeniu": {"color": "#4ECDC4", "description": "Klatka piersiowa"},
+    "Wspięcia na palce siedząc na maszynie": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
+    "Wyciskanie na ławeczce poziomej": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
+    "Wyciskanie na suwnicy Smitha": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
+    "Przenoszenie hantla za głowę w leżeniu": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
     "Brzuszki na maszynie": {"color": "#45B7D1", "description": "Mięśnie brzucha"},
-    "Unoszenie nóg w zwisie": {"color": "#45B7D1", "description": "Dolne brzuszki"},
-    "Plank": {"color": "#45B7D1", "description": "Core stability"},
-    "Barki - podciąganie sztangi": {"color": "#96CEB4", "description": "Barki"},
-    "Wyciskanie sztangi nad głowę": {"color": "#96CEB4", "description": "Barki"},
-    "Wznosy bokiem": {"color": "#96CEB4", "description": "Środkowe barki"},
-    "Podciąganie na drążku": {"color": "#FFEAA7", "description": "Plecy, biceps"},
-    "Wiosłowanie sztangą": {"color": "#FFEAA7", "description": "Plecy"},
-    "Ściąganie wyciągu górnego": {"color": "#FFEAA7", "description": "Najszersze grzbietu"},
+    "Skręty tułowia na maszynie": {"color": "#45B7D1", "description": "Mięśnie skośne brzucha"},
+    "Boczne zgięcia tułowia na ławce rzymskiej": {"color": "#45B7D1", "description": "Mięśnie skośne brzucha"},
+    "Skłony tułowia na ławce skośnej": {"color": "#45B7D1", "description": "Mięsień prosty brzucha"},
+    "Wznosy ramion bokiem z hantlami": {"color": "#96CEB4", "description": "Boczny (środkowy) akton mięśnia naramiennego "}, 
+    "Wyciskanie hantlii": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
+    "Rozpietki na maszynie": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
+    "Pompki na poręczach ze wspomaganiem": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
+    "Wznosy zgiętych nóg w zwisie na drążku": {"color": "#45B7D1", "description": "Mięsień prosty brzucha"},
+    "Podciąganie sztangi wzdłuż tułowia": {"color": "#96CEB4", "description": "Boczny i przedni akton mięśnia naramiennego"},
+    "Wyciskanie hantli nad głowę siedząc": {"color": "#96CEB4", "description": "Przedni akton mięśnia naramiennego"},
+    "Wyciskanie nad głowę na maszynie": {"color": "#96CEB4", "description": "Przedni akton mięśnia naramiennego"},
+    "Wznosy ramion bokiem na maszynie": {"color": "#96CEB4", "description": "Boczny (środkowy) akton mięśnia naramiennego"},
+    "Odwrotne rozpiętki na maszynie": {"color": "#96CEB4", "description": "Tylny akton mięśnia naramiennego"},
+    "Podciąganie hantli wzdłuż tułowia": {"color": "#96CEB4", "description": "Boczny i przedni akton mięśnia naramiennego"},
+    "Podciąganie nachwytem ze wspomaganiem": {"color": "#FFEAA7", "description": "Mięsień najszerszy grzbietu"},
+    "Wiosłowanie na wyciągu dolnym": {"color": "#FFEAA7", "description": "Mięsień czworoboczny (szczególnie część środkowa i dolna)"},
+    "Ściąganie drążka wyciągu górnego": {"color": "#FFEAA7", "description": "Mięsień najszerszy grzbietu"},
+    "Unoszenie tułowia na ławce rzymskiej": {"color": "#FFEAA7", "description": "Mięśnie prostowniki grzbietu"},  
     "Bieżnia - 30 min": {"color": "#FFB347", "description": "Cardio"},
     "Rower stacjonarny - 20 min": {"color": "#FFB347", "description": "Cardio"},
     "Stepper - 15 min": {"color": "#FFB347", "description": "Cardio"}
+
 }
 
 # Custom CSS dla mobile-first design
