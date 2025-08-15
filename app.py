@@ -443,7 +443,7 @@ def create_progress_chart(exercise_name):
         plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)',
         showlegend=False, margin=dict(l=20, r=20, t=40, b=20)
     )
-    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#E8E8E8')
+    fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#E8E8E8', tickformat="%Y-%m-%d", dtick="D1")
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='#E8E8E8')
     st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
