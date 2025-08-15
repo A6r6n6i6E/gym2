@@ -445,7 +445,7 @@ def create_progress_chart(exercise_name):
     )
     fig.update_xaxes(showgrid=True, gridwidth=1, gridcolor='#E8E8E8')
     fig.update_yaxes(showgrid=True, gridwidth=1, gridcolor='#E8E8E8')
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, use_container_width=True, config={"staticPlot": True})
 
     if len(df) > 0:
         st.markdown('<div class="metric-container">', unsafe_allow_html=True)
