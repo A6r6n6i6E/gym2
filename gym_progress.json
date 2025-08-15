@@ -1,23 +1,9 @@
 {
   "Wypychanie nóg (Leg Press)": [
     {
-      "date": "2025-08-14",
-      "weight": 30.0
-    },
-    {
       "date": "2025-08-15",
       "weight": 100.0
     },
-    {
-      "date": "2025-08-15",
-      "weight": 100.0
-    }
-  ],
-  "Uginanie nóg leżąc": [
-    {
-      "date": "2025-08-15",
-      "weight": 30.0
-    }
   ],
   "Uginanie nóg siedząc": [
     {
@@ -41,12 +27,6 @@
     {
       "date": "2025-08-15",
       "weight": 75.0
-    }
-  ],
-  "Wspięcia na palce siedząc na maszynie": [
-    {
-      "date": "2025-08-15",
-      "weight": 20.0
     }
   ]
 }
