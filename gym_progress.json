@@ -1,0 +1,46 @@
+{
+  "Wypychanie nóg (Leg Press)": [
+    {
+      "date": "2025-08-14",
+      "weight": 30.0
+    },
+    {
+      "date": "2025-08-15",
+      "weight": 100.0
+    },
+    {
+      "date": "2025-08-15",
+      "weight": 100.0
+    }
+  ],
+  "Uginanie nóg leżąc": [
+    {
+      "date": "2025-08-15",
+      "weight": 30.0
+    }
+  ],
+  "Uginanie nóg siedząc": [
+    {
+      "date": "2025-08-15",
+      "weight": 60.0
+    }
+  ],
+  "Brzuszki na maszynie": [
+    {
+      "date": "2025-08-15",
+      "weight": 40.0
+    }
+  ],
+  "Przenoszenie hantla za głowę w leżeniu": [
+    {
+      "date": "2025-08-15",
+      "weight": 15.0
+    }
+  ],
+  "Wyciskanie na ławeczce poziomej": [
+    {
+      "date": "2025-08-15",
+      "weight": 75.0
+    }
+  ]
+}
