@@ -7,7 +7,7 @@ import os
 from PIL import Image
 from io import BytesIO
 import base64
-import requests  # <— NOWE
+import requests
 
 # =========================
 # KONFIGURACJA STRONY
@@ -22,17 +22,17 @@ st.set_page_config(
 # =========================
 # KONFIG: GitHub + lokalny plik
 # =========================
-# Lokalny cache (opcjonalnie — ułatwia działanie lokalne)
 DATA_FILE = "gym_progress.json"
 
-# Konfiguracja z secrets (zalecane)
 GITHUB_TOKEN = st.secrets.get("github_token", None)
 REPO_OWNER = st.secrets.get("repo_owner", "")
 REPO_NAME = st.secrets.get("repo_name", "")
 REPO_BRANCH = st.secrets.get("repo_branch", "main")
 REPO_FILE_PATH = st.secrets.get("repo_file_path", "gym_progress.json")
 
-# Pomocnicze: walidacja konfiguracji GitHub
+# -------------------------
+# GitHub utils
+# -------------------------
 def github_config_ok():
     return bool(GITHUB_TOKEN and REPO_OWNER and REPO_NAME and REPO_BRANCH and REPO_FILE_PATH)
 
@@ -45,6 +45,111 @@ def _gh_headers():
 def _gh_contents_url():
     return f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{REPO_FILE_PATH}"
 
+# -------------------------
+# GitHub load & save z obsługą SHA
+# -------------------------
+def load_from_github() -> dict:
+    if not github_config_ok():
+        return {}
+    try:
+        url = _gh_contents_url() + f"?ref={REPO_BRANCH}"
+        r = requests.get(url, headers=_gh_headers(), timeout=15)
+        if r.status_code == 200:
+            content_b64 = r.json().get("content", "")
+            if content_b64:
+                decoded = base64.b64decode(content_b64).decode("utf-8")
+                return json.loads(decoded)
+            return {}
+        elif r.status_code == 404:
+            return {}
+        else:
+            st.warning(f"Nie udało się wczytać danych z GitHuba: {r.status_code}")
+            return {}
+    except Exception as e:
+        st.warning(f"Błąd połączenia z GitHub: {e}")
+        return {}
+
+def save_to_github(data_dict: dict, commit_message: str = "Update gym progress"):
+    if not github_config_ok():
+        st.error("Brak konfiguracji GitHub w st.secrets — zapis tylko lokalny.")
+        return False
+
+    url = _gh_contents_url()
+
+    def _put_data(sha=None):
+        json_str = json.dumps(data_dict, ensure_ascii=False, indent=2)
+        encoded_content = base64.b64encode(json_str.encode("utf-8")).decode("utf-8")
+        payload = {
+            "message": commit_message,
+            "content": encoded_content,
+            "branch": REPO_BRANCH
+        }
+        if sha:
+            payload["sha"] = sha
+        return requests.put(url, headers=_gh_headers(), json=payload, timeout=15)
+
+    try:
+        get_resp = requests.get(url, headers=_gh_headers(), timeout=15)
+        sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
+
+        put_resp = _put_data(sha)
+
+        if put_resp.status_code == 409:
+            st.warning("⚠️ Konflikt SHA – próbuję ponownie...")
+            get_resp = requests.get(url, headers=_gh_headers(), timeout=15)
+            sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
+            put_resp = _put_data(sha)
+
+        if put_resp.status_code in (200, 201):
+            st.toast("✅ Zapisano do GitHuba", icon="✅")
+            return True
+        else:
+            st.error(f"❌ Błąd zapisu do GitHuba: {put_resp.status_code} - {put_resp.text}")
+            return False
+    except Exception as e:
+        st.error(f"❌ Wyjątek przy zapisie do GitHuba: {e}")
+        return False
+
+# -------------------------
+# Cache + fallback
+# -------------------------
+@st.cache_data(show_spinner=False)
+def _initial_load_data():
+    gh_data = load_from_github()
+    if gh_data:
+        return gh_data
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            return {}
+    return {}
+
+def load_data():
+    if "data_store" not in st.session_state:
+        st.session_state.data_store = _initial_load_data()
+    return st.session_state.data_store
+
+def save_data(data, commit_message="Update gym progress"):
+    st.session_state.data_store = data
+    try:
+        with open(DATA_FILE, "w", encoding="utf-8") as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)
+    except Exception:
+        pass
+    ok = save_to_github(data, commit_message=commit_message)
+    if ok:
+        load_data.clear()  # reset cache po zapisie
+    return ok
+
+# -------------------------
+# DODANE: przycisk odświeżenia cache
+# -------------------------
+if st.sidebar.button("🔄 Odśwież dane"):
+    load_data.clear()
+    st.session_state.data_store = _initial_load_data()
+    st.toast("🔄 Dane odświeżone", icon="🔄")
 # =========================
 # MAPOWANIE OBRAZKÓW
 # =========================
@@ -55,7 +160,7 @@ EXERCISE_IMAGES = {
     "Skłony tułowia na ławce skośnej": "brzuszki-lawka.png",
     "Wznosy zgiętych nóg w zwisie na drążku": "brzuch-wznosy.png",
     "Wypychanie nóg (Leg Press)": "legpress.png",
-    "Biceps - uginanie ramion": "biceps.png",
+    "Uginanie ramion z hantlami z supinacją": "biceps1.png",
     "Podciąganie sztangi wzdłuż tułowia": "barki.png",
     "Odwrotne rozpiętki na maszynie": "barki-rozpietki.png",
     "Triceps - wyciskanie francuskie": "triceps.png",
@@ -69,7 +174,7 @@ EXERCISE_IMAGES = {
     "Uginanie nóg leżąc": "nogi-lezac.png",
     "Uginanie nóg siedząc": "nogi-siedzac.png",
     "Odwodzenie nóg siedząc": "nogi-odwodzenie.png", 
-    "Wypychanie ciężaru palcami nóg": "nogi-lydki-suwnica.png",
+    "Wspięcia na palce stojąc na maszynie": "nogi-lydki2.png",
     "Wspięcia na palce siedząc na maszynie": "nogi-lydki.png",
     "Skręty tułowia na maszynie": "brzuch-skretytulowia.png",
     "Plank": "brak.png",
@@ -82,9 +187,14 @@ EXERCISE_IMAGES = {
     "Wiosłowanie na wyciągu dolnym": "plecy-wioslowanie.png",
     "Unoszenie tułowia na ławce rzymskiej": "plecy-unoszenietulowia.png",
     "Ściąganie drążka wyciągu górnego": "plecy-sciaganie.png",
-    "Bieżnia - 30 min": "brak.png",
-    "Rower stacjonarny - 20 min": "brak.png",
-    "Stepper - 15 min": "brak.png"
+    "Uginanie przedramion ze sztangą łamaną": "biceps2.png",
+    "Uginanie ramienia siedząc na modlitewniku": "biceps3.png",
+    "Uginanie ramienia siedząc w oparciu łokciem o udo": "biceps4.png",
+    "Prostowanie ramion z liną górnego wyciągu": "triceps1.png",
+    "Wyciskanie francuskie z hantlami leżąc na ławce skośnej": "triceps2.png",
+    "Bieżnia": "bieznia.png",
+    "Rower stacjonarny": "rowerek.png",
+    "Stepper": "brak.png"
 }
 
 # =========================
@@ -99,7 +209,7 @@ WEEKLY_PLAN = {
             "Uginanie nóg leżąc",
             "Uginanie nóg siedząc",
             "Odwodzenie nóg siedząc",
-            "Wypychanie ciężaru palcami nóg",
+            "Wspięcia na palce stojąc na maszynie",
             "Wspięcia na palce siedząc na maszynie"
         ]
     },
@@ -127,7 +237,7 @@ WEEKLY_PLAN = {
         ]
     },
     "Czwartek": {
-        "title": "Czwartek: BARKI",
+        "title": "Czwartek: PLECY & BARKI",
         "color": "#FFB347",
         "exercises": [
             "Podciąganie sztangi wzdłuż tułowia",
@@ -136,24 +246,30 @@ WEEKLY_PLAN = {
             "Wyciskanie nad głowę na maszynie",
             "Wznosy ramion bokiem na maszynie",
             "Odwrotne rozpiętki na maszynie",
-            "Podciąganie hantli wzdłuż tułowia"
-        ]
-    },
-    "Piątek": {
-        "title": "Piątek: PLECY",
-        "color": "#FFB347",
-        "exercises": [
+            "Podciąganie hantli wzdłuż tułowia",
             "Podciąganie nachwytem ze wspomaganiem",
             "Wiosłowanie na wyciągu dolnym",
             "Ściąganie drążka wyciągu górnego",
             "Unoszenie tułowia na ławce rzymskiej"
         ]
     },
+    "Piątek": {
+        "title": "Piątek: BICEPS & TRICEPS",
+        "color": "#FFB347",
+        "exercises": [
+            "Uginanie ramion z hantlami z supinacją",
+            "Uginanie przedramion ze sztangą łamaną",
+            "Uginanie ramienia siedząc na modlitewniku",
+            "Uginanie ramienia siedząc w oparciu łokciem o udo",
+            "Prostowanie ramion z liną górnego wyciągu",
+            "Wyciskanie francuskie z hantlami leżąc na ławce skośnej"
+        ]
+    },
     "Sobota": {"title": "Sobota: REGENERACJA", "color": "#FFB347", "exercises": []},
     "Niedziela": {
         "title": "Niedziela: CARDIO",
         "color": "#FFB347",
-        "exercises": ["Bieżnia - 30 min", "Rower stacjonarny - 20 min", "Stepper - 15 min"]
+        "exercises": ["Bieżnia", "Rower stacjonarny"]
     }
 }
 
@@ -165,7 +281,7 @@ EXERCISES = {
     "Uginanie nóg siedząc": {"color": "#FF6B6B", "description": "Mięśnie tylnej części uda"},
     "Uginanie nóg leżąc": {"color": "#FF6B6B", "description": "Mięśnie tylnej części uda"},
     "Odwodzenie nóg siedząc": {"color": "#FF6B6B", "description": "Mięsień pośladkowy średni i mały"},
-    "Wypychanie ciężaru palcami nóg": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
+    "Wspięcia na palce stojąc na maszynie": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
     "Wspięcia na palce siedząc na maszynie": {"color": "#FF6B6B", "description": "Mięsień brzuchaty łydki "},
     "Wyciskanie na ławeczce poziomej": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
     "Wyciskanie na suwnicy Smitha": {"color": "#4ECDC4", "description": "Mięśnie klatki piersiowej"},
@@ -189,9 +305,15 @@ EXERCISES = {
     "Wiosłowanie na wyciągu dolnym": {"color": "#FFEAA7", "description": "Mięsień czworoboczny (szczególnie część środkowa i dolna)"},
     "Ściąganie drążka wyciągu górnego": {"color": "#FFEAA7", "description": "Mięsień najszerszy grzbietu"},
     "Unoszenie tułowia na ławce rzymskiej": {"color": "#FFEAA7", "description": "Mięśnie prostowniki grzbietu"},  
-    "Bieżnia - 30 min": {"color": "#FFB347", "description": "Cardio"},
-    "Rower stacjonarny - 20 min": {"color": "#FFB347", "description": "Cardio"},
-    "Stepper - 15 min": {"color": "#FFB347", "description": "Cardio"}
+    "Uginanie ramion z hantlami z supinacją": {"color": "#FFEAA7", "description": "Mięsień dwugłowy ramienia"}, 
+    "Uginanie przedramion ze sztangą łamaną": {"color": "#FFEAA7", "description": "Mięsień dwugłowy ramienia"}, 
+    "Uginanie ramienia siedząc na modlitewniku": {"color": "#FFEAA7", "description": "Mięsień ramienny"}, 
+    "Uginanie ramienia siedząc w oparciu łokciem o udo": {"color": "#FFEAA7", "description": "Mięsień ramienny"}, 
+    "Prostowanie ramion z liną górnego wyciągu": {"color": "#FFEAA7", "description": "Triceps"}, 
+    "Wyciskanie francuskie z hantlami leżąc na ławce skośnej": {"color": "#FFEAA7", "description": "Mięsień trójgłowy ramienia"}, 
+    "Bieżnia": {"color": "#FFB347", "description": "Cardio"},
+    "Rower stacjonarny": {"color": "#FFB347", "description": "Cardio"},
+    "Stepper": {"color": "#FFB347", "description": "Cardio"}
 }
 
 # =========================
