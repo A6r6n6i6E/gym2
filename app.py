@@ -23,16 +23,12 @@ st.set_page_config(
 # KONFIG: GitHub + lokalny plik
 # =========================
 DATA_FILE = "gym_progress.json"
-
 GITHUB_TOKEN = st.secrets.get("github_token", None)
 REPO_OWNER = st.secrets.get("repo_owner", "")
 REPO_NAME = st.secrets.get("repo_name", "")
 REPO_BRANCH = st.secrets.get("repo_branch", "main")
 REPO_FILE_PATH = st.secrets.get("repo_file_path", "gym_progress.json")
 
-# -------------------------
-# GitHub utils
-# -------------------------
 def github_config_ok():
     return bool(GITHUB_TOKEN and REPO_OWNER and REPO_NAME and REPO_BRANCH and REPO_FILE_PATH)
 
@@ -45,9 +41,9 @@ def _gh_headers():
 def _gh_contents_url():
     return f"https://api.github.com/repos/{REPO_OWNER}/{REPO_NAME}/contents/{REPO_FILE_PATH}"
 
-# -------------------------
-# GitHub load & save z obsługą SHA
-# -------------------------
+# =========================
+# GITHUB: wczytywanie i zapis
+# =========================
 def load_from_github() -> dict:
     if not github_config_ok():
         return {}
@@ -74,11 +70,14 @@ def save_to_github(data_dict: dict, commit_message: str = "Update gym progress")
         st.error("Brak konfiguracji GitHub w st.secrets — zapis tylko lokalny.")
         return False
 
-    url = _gh_contents_url()
+    try:
+        url = _gh_contents_url()
+        get_resp = requests.get(url, headers=_gh_headers(), timeout=15)
+        sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
 
-    def _put_data(sha=None):
         json_str = json.dumps(data_dict, ensure_ascii=False, indent=2)
         encoded_content = base64.b64encode(json_str.encode("utf-8")).decode("utf-8")
+
         payload = {
             "message": commit_message,
             "content": encoded_content,
@@ -86,22 +85,17 @@ def save_to_github(data_dict: dict, commit_message: str = "Update gym progress")
         }
         if sha:
             payload["sha"] = sha
-        return requests.put(url, headers=_gh_headers(), json=payload, timeout=15)
 
-    try:
-        get_resp = requests.get(url, headers=_gh_headers(), timeout=15)
-        sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
-
-        put_resp = _put_data(sha)
-
-        if put_resp.status_code == 409:
+        put_resp = requests.put(url, headers=_gh_headers(), json=payload, timeout=15)
+        if put_resp.status_code == 409:  # conflict
             st.warning("⚠️ Konflikt SHA – próbuję ponownie...")
             get_resp = requests.get(url, headers=_gh_headers(), timeout=15)
             sha = get_resp.json().get("sha") if get_resp.status_code == 200 else None
-            put_resp = _put_data(sha)
+            if sha:
+                payload["sha"] = sha
+                put_resp = requests.put(url, headers=_gh_headers(), json=payload, timeout=15)
 
         if put_resp.status_code in (200, 201):
-            st.toast("✅ Zapisano do GitHuba", icon="✅")
             return True
         else:
             st.error(f"❌ Błąd zapisu do GitHuba: {put_resp.status_code} - {put_resp.text}")
@@ -110,9 +104,9 @@ def save_to_github(data_dict: dict, commit_message: str = "Update gym progress")
         st.error(f"❌ Wyjątek przy zapisie do GitHuba: {e}")
         return False
 
-# -------------------------
-# Cache + fallback
-# -------------------------
+# =========================
+# DANE: cache + fallback
+# =========================
 @st.cache_data(show_spinner=False)
 def _initial_load_data():
     gh_data = load_from_github()
@@ -138,18 +132,21 @@ def save_data(data, commit_message="Update gym progress"):
             json.dump(data, f, ensure_ascii=False, indent=2)
     except Exception:
         pass
+
     ok = save_to_github(data, commit_message=commit_message)
     if ok:
-        load_data.clear()  # reset cache po zapisie
+        st.toast("✅ Zapisano do GitHuba", icon="✅")
+        _initial_load_data.clear()  # reset cache
     return ok
 
-# -------------------------
-# DODANE: przycisk odświeżenia cache
-# -------------------------
+# =========================
+# UI: odświeżanie danych
+# =========================
 if st.sidebar.button("🔄 Odśwież dane"):
-    load_data.clear()
+    _initial_load_data.clear()
     st.session_state.data_store = _initial_load_data()
     st.toast("🔄 Dane odświeżone", icon="🔄")
+
 # =========================
 # MAPOWANIE OBRAZKÓW
 # =========================
