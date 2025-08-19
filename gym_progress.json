@@ -5,17 +5,13 @@
       "weight": 100.0
     },
     {
-      "date": "2025-08-18",
-      "weight": 110.0
+      "date": "2025-08-15",
+      "weight": 100.0
     }
   ],
   "Uginanie nóg siedząc": [
     {
       "date": "2025-08-15",
-      "weight": 60.0
-    },
-    {
-      "date": "2025-08-18",
       "weight": 60.0
     }
   ],
@@ -23,10 +19,6 @@
     {
       "date": "2025-08-15",
       "weight": 40.0
-    },
-    {
-      "date": "2025-08-18",
-      "weight": 42.5
     }
   ],
   "Przenoszenie hantla za głowę w leżeniu": [
@@ -39,18 +31,6 @@
     {
       "date": "2025-08-15",
       "weight": 75.0
-    }
-  ],
-  "Uginanie nóg leżąc": [
-    {
-      "date": "2025-08-19",
-      "weight": 46.0
-    }
-  ],
-  "Uginanie ramion z hantlami z supinacją": [
-    {
-      "date": "2025-08-18",
-      "weight": 12.5
     }
   ]
 }
